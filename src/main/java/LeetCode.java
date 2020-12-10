@@ -295,140 +295,343 @@ public class LeetCode {
             return Math.max(f1, f2);
         }
 
-        public int maximumWealth(int[][] accounts) {
-            int m = accounts.length;
-            int n = accounts[0].length;
-            int max = 0;
+        public List<Integer> splitIntoFibonacci(String S) {
+            List<Integer> list = new ArrayList<Integer>();
+            backtrack(list, S, S.length(), 0, 0, 0);
+            return list;
+        }
 
-            for (int i = 0; i < m; i++) {
-                int tem = 0;
-                for (int j = 0; j < n; j++) {
-                    tem += accounts[i][j];
+        public boolean backtrack(List<Integer> list, String S, int length, int index, int sum, int prev) {
+            if (index == length) {
+                return list.size() >= 3;
+            }
+            long currLong = 0;
+            for (int i = index; i < length; i++) {
+                if (i > index && S.charAt(index) == '0') {
+                    break;
                 }
-                if (max < tem) {
-                    max = tem;
+                currLong = currLong * 10 + S.charAt(i) - '0';
+                if (currLong > Integer.MAX_VALUE) {
+                    break;
+                }
+                int curr = (int) currLong;
+                if (list.size() >= 2) {
+                    if (curr < sum) {
+                        continue;
+                    } else if (curr > sum) {
+                        break;
+                    }
+                }
+                list.add(curr);
+                if (backtrack(list, S, length, i + 1, prev + curr, curr)) {
+                    return true;
+                } else {
+                    list.remove(list.size() - 1);
                 }
             }
-            return max;
+            return false;
         }
+    }
 
-        private Stack<int[]> stack = new Stack<>();
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<Integer>();
+        inorder(root, res);
+        return res;
+    }
 
-        public void push(int x) {
-            if (stack.isEmpty()) {
-                stack.push(new int[]{x, x});
-            } else {
-                stack.push(new int[]{x, Math.min(x, stack.peek()[1])});
+    public void inorder(TreeNode root, List<Integer> res) {
+        if (root == null) {
+            return;
+        }
+        inorder(root.left, res);
+        res.add(root.val);
+        inorder(root.right, res);
+    }
+
+    public int maximumWealth(int[][] accounts) {
+        int m = accounts.length;
+        int n = accounts[0].length;
+        int max = 0;
+
+        for (int i = 0; i < m; i++) {
+            int tem = 0;
+            for (int j = 0; j < n; j++) {
+                tem += accounts[i][j];
+            }
+            if (max < tem) {
+                max = tem;
             }
         }
+        return max;
+    }
 
-        public void pop() {
-            stack.pop();
+    List<String> res = new ArrayList<>();
+    int[] watch = new int[]{1, 2, 4, 8, 1, 2, 4, 8, 16, 32};
+    int[] onOff = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    public List<String> readBinaryWatch(int num) {
+        if (num > 8) {
+            return res;
         }
+        dfs(num, 0, 0);
+        return res;
+    }
 
-        public int top() {
-            return stack.peek()[0];
+    void dfs(int num, int onSum, int start) {
+        if (onSum == num) {
+            addResult();
+            return;
         }
-
-        public int getMin() {
-            return stack.peek()[1];
+        for (int i = start; i < watch.length; i++) {
+            onOff[i] = 1;
+            dfs(num, onSum + 1, i + 1);
+            onOff[i] = 0;
         }
+    }
 
-        public String removeKdigits(String num, int k) {
-            int len = num.length();
-            Deque<Character> deque = new LinkedList<>();
-            for (int i = 0; i < len; i++) {
-                char digit = num.charAt(i);
-                while (!deque.isEmpty() && k > 0 && deque.peekLast() > digit) {
-                    deque.pollLast();
-                    k--;
+    public void addResult() {
+        int hour = 0;
+        int minute = 0;
+        for (int i = 0; i < onOff.length; i++) {
+            if (onOff[i] == 1) {
+                if (i < 4) {
+                    hour += watch[i];
+                } else {
+                    minute += watch[i];
                 }
-                deque.offerLast(digit);
             }
-            for (int i = 0; i < k; ++i) {
+        }
+        if (hour > 11 || minute > 59) return;
+        String time = hour + ":" + ((minute < 10) ? "0" + minute : minute);
+        res.add(time);
+    }
+
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        backTrack(0, nums, res, new ArrayList<Integer>());
+        return res;
+    }
+
+    private void backTrack(int i, int[] nums, List<List<Integer>> res, ArrayList<Integer> tmp) {
+        res.add(new ArrayList<>(tmp));
+        for (int j = i; j < nums.length; j++) {
+            tmp.add(nums[j]);
+            backTrack(j + 1, nums, res, tmp);
+            tmp.remove(tmp.size() - 1);
+        }
+    }
+
+    public int uniquePaths2(int m, int n) {
+        int[] dp = new int[n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || j == 0) {
+                    dp[j] = 1;
+                } else {
+                    dp[j] = dp[j - 1] + dp[j];
+                }
+            }
+        }
+        return dp[n - 1];
+    }
+
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 1;
+                } else {
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+                }
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+
+    public List<String> generateParenthesis(int n) {
+        List<String> ans = new ArrayList<>();
+        backTrack(ans, new StringBuilder(), 0, 0, n);
+        return ans;
+    }
+
+    private void backTrack(List<String> ans, StringBuilder cur, int open, int close, int max) {
+        if (cur.length() == max * 2) {
+            ans.add(cur.toString());
+            return;
+        }
+        if (open < max) {
+            cur.append('(');
+            backTrack(ans, cur, open + 1, close, max);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+        if (open > close) {
+            cur.append(')');
+            backTrack(ans, cur, open, close + 1, max);
+            cur.deleteCharAt(cur.length() - 1);
+        }
+    }
+
+    public int[] countBits2(int num) {
+        int[] ans = new int[num + 1];
+        for (int i = 0; i <= num; i++) {
+            ans[i] = Integer.bitCount(i);
+        }
+        return ans;
+    }
+
+    public int[] countBits(int num) {
+        int[] ans = new int[num + 1];
+        int i = 0, b = 1;
+        while (b <= num) {
+            while (i < b && i + b <= num) {
+                ans[i + b] = ans[i] + 1;
+                i++;
+            }
+            i = 0;
+            b <<= 1;
+        }
+        return ans;
+    }
+
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> output = new ArrayList<>();
+        for (int num : nums) {
+            output.add(num);
+        }
+        int n = nums.length;
+        backTrack(n, output, res, 0);
+        return res;
+    }
+
+    public void backTrack(int n, List<Integer> output, List<List<Integer>> res, int first) {
+        if (first == n) {
+            res.add(new ArrayList<>(output));
+            return;
+        }
+        for (int i = first; i < n; i++) {
+            Collections.swap(output, first, i);
+            backTrack(n, output, res, first + 1);
+            Collections.swap(output, first, i);
+        }
+    }
+
+    private Stack<int[]> stack = new Stack<>();
+
+    public void push(int x) {
+        if (stack.isEmpty()) {
+            stack.push(new int[]{x, x});
+        } else {
+            stack.push(new int[]{x, Math.min(x, stack.peek()[1])});
+        }
+    }
+
+    public void pop() {
+        stack.pop();
+    }
+
+    public int top() {
+        return stack.peek()[0];
+    }
+
+    public int getMin() {
+        return stack.peek()[1];
+    }
+
+    public String removeKdigits(String num, int k) {
+        int len = num.length();
+        Deque<Character> deque = new LinkedList<>();
+        for (int i = 0; i < len; i++) {
+            char digit = num.charAt(i);
+            while (!deque.isEmpty() && k > 0 && deque.peekLast() > digit) {
                 deque.pollLast();
+                k--;
             }
-            StringBuilder ret = new StringBuilder();
-            boolean leadingZero = true;
-            while (!deque.isEmpty()) {
-                char digit = deque.pollFirst();
-                if (leadingZero && digit == '0') {
-                    continue;
-                }
-                leadingZero = false;
-                ret.append(digit);
-            }
-            return ret.length() == 0 ? "0" : ret.toString();
+            deque.offerLast(digit);
         }
+        for (int i = 0; i < k; ++i) {
+            deque.pollLast();
+        }
+        StringBuilder ret = new StringBuilder();
+        boolean leadingZero = true;
+        while (!deque.isEmpty()) {
+            char digit = deque.pollFirst();
+            if (leadingZero && digit == '0') {
+                continue;
+            }
+            leadingZero = false;
+            ret.append(digit);
+        }
+        return ret.length() == 0 ? "0" : ret.toString();
+    }
 
 //        public boolean isPalindrome(ListNode head) {
 //            List<Integer> vals = new ArrayList<>();
 //
 //        }
 
-        public int minCostClimbingStairs2(int[] cost) {
-            int len = cost.length;
-            int f1 = 0, f2 = 0;
-            for (int i = 0; i < len; i++) {
-                int f0 = cost[i] + Math.min(f1, f2);
-                f1 = f2;
-                f2 = f0;
-            }
-            return Math.min(f1, f2);
+    public int minCostClimbingStairs2(int[] cost) {
+        int len = cost.length;
+        int f1 = 0, f2 = 0;
+        for (int i = 0; i < len; i++) {
+            int f0 = cost[i] + Math.min(f1, f2);
+            f1 = f2;
+            f2 = f0;
         }
-
-        public int minCostClimbingStairs(int[] cost) {
-            int len = cost.length;
-            int f1 = 0, f2 = 0;
-            for (int i = len - 1; i >= 0; i--) {
-                int f0 = cost[i] + Math.min(f1, f2);
-                f2 = f1;
-                f1 = f0;
-            }
-            return Math.min(f1, f2);
-        }
-
-        public List<List<Integer>> generate(int numRows) {
-            List<List<Integer>> ans = new ArrayList<>();
-            for (int i = 0; i < numRows; i++) {
-                List<Integer> row = new ArrayList<>();
-                for (int j = 0; j <= i; j++) {
-                    if (j == 0 || j == i) {
-                        row.add(1);
-                    } else {
-                        row.add(ans.get(i - 1).get(j - 1) + ans.get(i - 1).get(j));
-                    }
-                }
-                ans.add(row);
-            }
-            return ans;
-        }
-
-        public int leastInterval(char[] tasks, int n) {
-            Map<Character, Integer> freq = new HashMap<Character, Integer>();
-            // 最多的执行次数
-            int maxExec = 0;
-            for (char ch : tasks) {
-                int exec = freq.getOrDefault(ch, 0) + 1;
-                freq.put(ch, exec);
-                maxExec = Math.max(maxExec, exec);
-            }
-
-            // 具有最多执行次数的任务数量
-            int maxCount = 0;
-            Set<Map.Entry<Character, Integer>> entrySet = freq.entrySet();
-            for (Map.Entry<Character, Integer> entry : entrySet) {
-                int value = entry.getValue();
-                if (value == maxExec) {
-                    ++maxCount;
-                }
-            }
-
-            return Math.max((maxExec - 1) * (n + 1) + maxCount, tasks.length);
-        }
-
-
+        return Math.min(f1, f2);
     }
+
+    public int minCostClimbingStairs(int[] cost) {
+        int len = cost.length;
+        int f1 = 0, f2 = 0;
+        for (int i = len - 1; i >= 0; i--) {
+            int f0 = cost[i] + Math.min(f1, f2);
+            f2 = f1;
+            f1 = f0;
+        }
+        return Math.min(f1, f2);
+    }
+
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> ans = new ArrayList<>();
+        for (int i = 0; i < numRows; i++) {
+            List<Integer> row = new ArrayList<>();
+            for (int j = 0; j <= i; j++) {
+                if (j == 0 || j == i) {
+                    row.add(1);
+                } else {
+                    row.add(ans.get(i - 1).get(j - 1) + ans.get(i - 1).get(j));
+                }
+            }
+            ans.add(row);
+        }
+        return ans;
+    }
+
+    public int leastInterval(char[] tasks, int n) {
+        Map<Character, Integer> freq = new HashMap<Character, Integer>();
+        // 最多的执行次数
+        int maxExec = 0;
+        for (char ch : tasks) {
+            int exec = freq.getOrDefault(ch, 0) + 1;
+            freq.put(ch, exec);
+            maxExec = Math.max(maxExec, exec);
+        }
+
+        // 具有最多执行次数的任务数量
+        int maxCount = 0;
+        Set<Map.Entry<Character, Integer>> entrySet = freq.entrySet();
+        for (Map.Entry<Character, Integer> entry : entrySet) {
+            int value = entry.getValue();
+            if (value == maxExec) {
+                ++maxCount;
+            }
+        }
+
+        return Math.max((maxExec - 1) * (n + 1) + maxCount, tasks.length);
+    }
+
 
     //详细
     public int matrixScore2(int[][] A) {
