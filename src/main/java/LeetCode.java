@@ -472,6 +472,156 @@ public class LeetCode {
         }
     }
 
+    public boolean lemonadeChange2(int[] bills) {
+        int five = 0, ten = 0;
+        for (int bill : bills) {
+            if (bill == 5) {
+                five++;
+            } else if (bill == 10) {
+                if (five == 0) {
+                    return false;
+                }
+                ten++;
+                five--;
+            } else {
+                if (five > 0 && ten > 0) {
+                    five--;
+                    ten--;
+                } else if (five >= 3) {
+                    five -= 3;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        int len = candidates.length;
+        List<List<Integer>> ans = new ArrayList<>();
+        if (len == 0) {
+            return ans;
+        }
+        Arrays.sort(candidates);
+        Deque<Integer> path = new ArrayDeque<>();
+        dfs(candidates, 0, len, target, path, ans);
+        return ans;
+    }
+
+    private void dfs(int[] candidates, int begin, int len, int target, Deque<Integer> path, List<List<Integer>> ans) {
+        if (target == 0) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = begin; i < len; i++) {
+            if (target - candidates[i] < 0) {
+                break;
+            }
+            path.addLast(candidates[i]);
+            dfs(candidates, i, len, target - candidates[i], path, ans);
+            path.removeLast();
+        }
+    }
+
+    public int[] dailyTemperatures(int[] T) {
+        int[] res = new int[T.length];
+        Deque<Integer> stack = new LinkedList<Integer>();
+        for (int i = 0; i < T.length; i++) {
+            while (!stack.isEmpty() && T[i] > T[stack.peek()]) {
+                res[stack.peek()] = i - stack.pop();
+            }
+            stack.push(i);
+        }
+        return res;
+    }
+
+    //超时，没法ac
+    public int trap2(int[] height) {
+        int sum = 0;
+        int max = getMax(height);//获取最大高度
+        boolean isStart;
+        int temp;
+        for (int i = 0; i < max; i++) {
+            isStart = false;
+            temp = 0;
+            for (int j = 0; j < height.length; j++) {
+                if (isStart && height[j] < i) {
+                    temp++;
+                }
+                if (height[j] >= i) {
+                    sum += temp;
+                    temp = 0;
+                    isStart = true;
+                }
+            }
+        }
+        return sum;
+    }
+
+    private int getMax(int[] height) {
+        int max = 0;
+        for (int i = 0; i < height.length; i++) {
+            if (height[i] > max) {
+                max = height[i];
+            }
+        }
+        return max;
+    }
+
+    public int trap(int[] height) {
+        int ans = 0;
+        Stack<Integer> stack = new Stack<>();
+        int len = height.length;
+        for (int i = 0; i < len; i++) {
+            while (!stack.isEmpty() && height[stack.peek()] < height[i]) {
+                int cur = stack.pop();
+                if (stack.isEmpty()) {
+                    break;
+                }
+                int l = stack.peek();
+                int r = i;
+                int h = Math.min(height[r], height[l]) - height[cur];
+                ans += (r - l - 1) * h;
+            }
+            stack.push(i);
+        }
+        return ans;
+    }
+
+    public boolean lemonadeChange(int[] bills) {
+        int[] money = new int[3];
+        for (int i = 0; i < bills.length; i++) {
+            switch (bills[i]) {
+                case 5:
+                    money[0]++;
+                    break;
+                case 10:
+                    money[1]++;
+                    if (money[0] > 0) {
+                        money[0]--;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case 20:
+                    money[2]++;
+                    if (money[1] > 0 && money[0] > 0) {
+                        money[0]--;
+                        money[1]--;
+                    } else if (money[0] > 3) {
+                        money[0] -= 3;
+
+                    } else {
+                        return false;
+                    }
+                    break;
+            }
+        }
+        return true;
+    }
+
+
     public int[] countBits2(int num) {
         int[] ans = new int[num + 1];
         for (int i = 0; i <= num; i++) {
@@ -492,6 +642,65 @@ public class LeetCode {
             b <<= 1;
         }
         return ans;
+    }
+
+    public int[][] reconstructQueue(int[][] people) {
+        Arrays.sort(people, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] person1, int[] person2) {
+                if (person1[0] != person2[0]) {
+                    return person2[0] - person1[0];
+                } else {
+                    return person1[1] - person2[1];
+                }
+            }
+        });
+        System.out.println(people.toString());
+        List<int[]> ans = new ArrayList<>();
+        for (int[] person : people) {
+            ans.add(person[1], person);
+        }
+        return ans.toArray(new int[ans.size()][]);
+    }
+
+    public int rob(TreeNode root) {
+        int[] rootStatus = deep(root);
+        return Math.max(rootStatus[0], rootStatus[1]);
+    }
+
+    private int[] deep(TreeNode root) {
+        if (root == null) {
+            return new int[]{0, 0};
+        }
+        int[] left = deep(root.left);
+        int[] right = deep(root.right);
+
+        int selected = root.val + left[1] + right[1];
+        int notSelected = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+        return new int[]{selected, notSelected};
+    }
+
+    public String predictPartyVictory(String senate) {
+        int n = senate.length();
+        Queue<Integer> radiant = new LinkedList<Integer>();
+        Queue<Integer> dire = new LinkedList<Integer>();
+        for (int i = 0; i < n; i++) {
+            if (senate.charAt(i) == 'R') {
+                radiant.offer(i);
+            } else {
+                dire.offer(i);
+            }
+        }
+        while (!radiant.isEmpty() && !dire.isEmpty()) {
+            int radiantIndex = radiant.poll();
+            int direIndex = dire.poll();
+            if (radiantIndex < direIndex) {
+                radiant.offer(radiantIndex + n);
+            } else {
+                dire.offer(direIndex + n);
+            }
+        }
+        return radiant.isEmpty()?"Dire":"Radiant";
     }
 
     public List<List<Integer>> permute(int[] nums) {
