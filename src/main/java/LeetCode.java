@@ -177,8 +177,17 @@ public class LeetCode {
         TreeNode left;
         TreeNode right;
 
-        TreeNode(int x) {
-            val = x;
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
         }
     }
 
@@ -401,7 +410,9 @@ public class LeetCode {
                 }
             }
         }
-        if (hour > 11 || minute > 59) return;
+        if (hour > 11 || minute > 59) {
+            return;
+        }
         String time = hour + ":" + ((minute < 10) ? "0" + minute : minute);
         res.add(time);
     }
@@ -700,7 +711,7 @@ public class LeetCode {
                 dire.offer(direIndex + n);
             }
         }
-        return radiant.isEmpty()?"Dire":"Radiant";
+        return radiant.isEmpty() ? "Dire" : "Radiant";
     }
 
     public List<List<Integer>> permute(int[] nums) {
@@ -775,10 +786,74 @@ public class LeetCode {
         return ret.length() == 0 ? "0" : ret.toString();
     }
 
-//        public boolean isPalindrome(ListNode head) {
+    //        public boolean isPalindrome(ListNode head) {
 //            List<Integer> vals = new ArrayList<>();
 //
 //        }
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();
+        for (String str : strs) {
+            char[] array = str.toCharArray();
+            Arrays.sort(array);
+            String key = new String(array);
+            List<String> list = map.getOrDefault(key, new ArrayList<String>());
+            list.add(str);
+            map.put(key, list);
+        }
+        return new ArrayList<List<String>>(map.values());
+    }
+
+    public int numTrees(int n) {
+        int[] G = new int[n + 1];
+        G[0] = 1;
+        G[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            for (int j = 1; j <= i; j++) {
+                G[i] = G[j - 1] * G[i - j];
+            }
+        }
+        return G[n];
+    }
+
+    public int lengthOfLIS(int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        int maxLength = 1;
+        int[] dp = new int[nums.length];
+        dp[0] = 1;
+        for (int i = 1; i < nums.length; i++) {
+            dp[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            maxLength = Math.max(maxLength, dp[i]);
+        }
+        return maxLength;
+    }
+
+    public int findKthLargest(int[] nums, int k) {
+        Arrays.sort(nums);
+        return nums[nums.length - k];
+    }
+
+    public void flatten(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        flatten(root.left);
+        TreeNode temp = root.right;
+        root.right = root.left;
+        root.left = null;
+        while (root.right != null) {
+            root = root.right;
+        }
+        flatten(temp);
+        root.right = temp;
+    }
+
 
     public int minCostClimbingStairs2(int[] cost) {
         int len = cost.length;
