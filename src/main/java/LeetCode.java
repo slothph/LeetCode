@@ -267,6 +267,9 @@ public class LeetCode {
             next = null;
         }
 
+        ListNode() {
+        }
+
         ListNode(int val, ListNode next) {
             this.val = val;
             this.next = next;
@@ -870,6 +873,50 @@ public class LeetCode {
             }
         }
         return Integer.parseInt(new String(str));
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode pre = new ListNode();
+        ListNode cur = pre;
+        int carry = 0;
+        while (l1 != null || l2 != null) {
+            int x = l1 == null ? 0 : l1.val;
+            int y = l2 == null ? 0 : l2.val;
+            int sum = x + y + carry;
+
+            carry = sum > 9 ? 1 : 0;
+            sum = sum % 10;
+            cur.next = new ListNode(sum);
+            cur = cur.next;
+            if (l1 != null) {
+                l1 = l1.next;
+            }
+            if (l2 != null) {
+                l2 = l2.next;
+            }
+        }
+        if (carry == 1) {
+            cur.next = new ListNode(carry);
+        }
+        return pre.next;
+    }
+
+
+    public int lengthOfLongestSubstring(String s) {
+        Set<Character> occ = new HashSet<>();
+        int n = s.length();
+        int rk = -1, ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (i != 0) {
+                occ.remove(s.charAt(i - 1));
+            }
+            while (rk + 1 < n && !occ.contains(s.charAt(rk + 1))) {
+                occ.add(s.charAt(rk + 1));
+                rk++;
+            }
+            ans = Math.max(ans, rk - i + 1);
+        }
+        return ans;
     }
 
     public int minCostClimbingStairs2(int[] cost) {
