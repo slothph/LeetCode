@@ -983,6 +983,31 @@ public class LeetCode {
         return length;
     }
 
+    private String[] numberMap = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    private StringBuilder sb = new StringBuilder();
+    private List<String> resList = new ArrayList<>();
+
+    public List<String> letterCombinations(String digits) {
+        if (digits == null || digits.length() == 0) {
+            return resList;
+        }
+        backTrack(digits, 0);
+        return resList;
+    }
+
+    private void backTrack(String digits, int index) {
+        if (sb.length() == digits.length()) {
+            resList.add(sb.toString());
+            return;
+        }
+        String val = numberMap[digits.charAt(index) - '2'];
+        for (char ch : val.toCharArray()) {
+            sb.append(ch);
+            backTrack(digits, index + 1);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+
     public boolean wordPattern(String pattern, String s) {
         Map<String, Character> str2ch = new HashMap<>();
         Map<Character, String> ch2str = new HashMap<>();
