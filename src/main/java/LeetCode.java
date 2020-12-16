@@ -957,6 +957,60 @@ public class LeetCode {
         return ans;
     }
 
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode temp = head;
+        int len = 0;
+        while (temp != null) {
+            len++;
+            temp = temp.next;
+        }
+        temp = head;
+        for (int i = 1; i < len - n + 1; i++) {
+            temp = temp.next;
+        }
+        if (temp.next == null)
+            return null;
+        temp.next = temp.next.next;
+        return head;
+    }
+
+    public int getLength(ListNode head) {
+        int length = 0;
+        while (head != null) {
+            ++length;
+            head = head.next;
+        }
+        return length;
+    }
+
+    public boolean wordPattern(String pattern, String s) {
+        Map<String, Character> str2ch = new HashMap<>();
+        Map<Character, String> ch2str = new HashMap<>();
+        int m = s.length();
+        int i = 0;
+        for (int p = 0; p < pattern.length(); p++) {
+            char ch = pattern.charAt(p);
+            if (i >= m) {
+                return false;
+            }
+            int j = i;
+            while (j < m && s.charAt(j) != ' ') {
+                j++;
+            }
+            String tmp = s.substring(i, j);
+            if (str2ch.containsKey(tmp) && str2ch.get(tmp) != ch) {
+                return false;
+            }
+            if (ch2str.containsKey(ch) && !tmp.equals(ch2str.get(ch))) {
+                return false;
+            }
+            str2ch.put(tmp, ch);
+            ch2str.put(ch, tmp);
+            i = j + 1;
+        }
+        return i >= m;
+    }
+
     public int leastInterval(char[] tasks, int n) {
         Map<Character, Integer> freq = new HashMap<Character, Integer>();
         // 最多的执行次数
