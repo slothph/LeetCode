@@ -1008,6 +1008,49 @@ public class LeetCode {
         }
     }
 
+    public int maxProfit(int[] prices, int fee) {
+        int len = prices.length;
+        // dp[i][0] 表示第 i 天 不持有股票 时的 最大利润
+        // dp[i][1] 表示第 i 天 持有股票 时的 最大利润
+        // 假设 手续费 在买入时 扣除
+        int dp0 = 0;
+        int dp1 = -prices[0] - fee;
+        for (int i = 1; i < len; i++) {
+            int tmp = dp0;
+            dp0 = Math.max(dp0, dp1 + prices[i]);
+            dp1 = Math.max(dp1, tmp - prices[i] - fee);
+        }
+        return dp0;
+    }
+
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() == 0) {
+            return "";
+        }
+        int start = 0, end = 0;
+        for (int i = 0; i < s.length(); i++) {
+            //下面有两个是因为回文中间可能是一个字母，也可能是两个同样的字母
+            //对应两个len
+            int len1 = expandAround(s, i, i);
+            int len2 = expandAround(s, i, i + 1);
+            int len = Math.max(len1, len2);
+            //end-start得出的长度是保存的目前最长的回文串的长度
+            if (len > end - start) {
+                start = i - (len - 1) / 2;
+                end = i + len / 2;
+            }
+        }
+        return s.substring(start, end + 1);
+    }
+
+    private int expandAround(String s, int left, int right) {
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+            left--;
+            right++;
+        }
+        return right - left - 1;
+    }
+
     public boolean wordPattern(String pattern, String s) {
         Map<String, Character> str2ch = new HashMap<>();
         Map<Character, String> ch2str = new HashMap<>();
