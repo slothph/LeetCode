@@ -1051,6 +1051,32 @@ public class LeetCode {
         return right - left - 1;
     }
 
+    public char findTheDifference(String s, String t) {
+        int l1 = 0, l2 = 0;
+        for (int i = 0; i < s.length(); i++) {
+            l1 += s.charAt(i);
+        }
+        for (int i = 0; i < t.length(); i++) {
+            l2 += t.charAt(i);
+        }
+        return (char) (l2 - l1);
+    }
+
+    public int maxArea(int[] height) {
+        int left = 0, right = height.length - 1;
+        int maxV = 0;
+        while (left < right) {
+            int temp = (right - left) * Math.min(height[left], height[right]);
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+            maxV = Math.max(maxV, temp);
+        }
+        return maxV;
+    }
+
     public boolean wordPattern(String pattern, String s) {
         Map<String, Character> str2ch = new HashMap<>();
         Map<Character, String> ch2str = new HashMap<>();
