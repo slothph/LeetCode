@@ -1114,6 +1114,74 @@ public class LeetCode {
         return ans;
     }
 
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> lists = new ArrayList<>();
+        if (root == null) {
+            return lists;
+        }
+        Queue<TreeNode> queue = new ArrayDeque<>();
+        queue.add(root);
+        boolean isLeft = true;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                list.add(node.val);
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+            }
+            if (lists.size() % 2 == 1) {
+                Collections.reverse(list);
+            }
+            lists.add(list);
+        }
+        return lists;
+    }
+
+
+    public boolean canJump(int[] nums) {
+        int maxLen = 0;
+        int len = nums.length;
+        for (int i = 0; i < len; i++) {
+            if (i > maxLen) {
+                return false;
+            }
+            maxLen = Math.max(i + nums[i], maxLen);
+            if (maxLen >= len - 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int firstUniqChar(String s) {
+        Map<Character, Integer> position = new HashMap<>();
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            char ch = s.charAt(i);
+            if (position.containsKey(ch)) {
+                position.put(ch, -1);
+            } else {
+                position.put(ch, i);
+            }
+        }
+        int first = n;
+        for (Map.Entry<Character, Integer> entry : position.entrySet()) {
+            int pos = entry.getValue();
+            if (pos != -1 && pos < first) {
+                first = pos;
+            }
+        }
+        if (first == n) {
+            first = -1;
+        }
+        return first;
+    }
 
     public List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> lists = new ArrayList<>();
@@ -1139,7 +1207,6 @@ public class LeetCode {
         }
         return lists;
     }
-
 
 
     public int minCostClimbingStairs3(int[] cost) {
