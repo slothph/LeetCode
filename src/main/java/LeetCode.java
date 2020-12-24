@@ -1183,6 +1183,28 @@ public class LeetCode {
         return first;
     }
 
+    public int candy(int[] ratings) {
+        int n = ratings.length;
+        int[] candies = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && ratings[i] > ratings[i - 1]) {
+                candies[i] = candies[i - 1] + 1;
+            } else {
+                candies[i] = 1;
+            }
+        }
+        int right = 0, ans = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            if (i < n - 1 && ratings[i] > ratings[i + 1]) {
+                right++;
+            } else {
+                right = 1;
+            }
+            ans += Math.max(candies[i], right);
+        }
+        return ans;
+    }
+
     public List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> lists = new ArrayList<>();
         if (root == null) {
